@@ -1,0 +1,10 @@
+/blockchain/
+/build/
+/bin/
+/com.heatledger.embed*
+/logs/
+/*.html
+*.log
+/.classpath
+/.gradle/
+/src/main/java/com/heatledger/embed/applications
