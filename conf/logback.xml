@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!--  <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" /> -->  
+
+	<property name="DATE_FORMAT" value="yyyy-MM-dd HH:mm:ss" />
+	<property name="PATTERN" value="%d{${DATE_FORMAT}} [%thread] %-5level %logger{36} - %msg%n" />
+    <property file="logging.properties" />	
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>${PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+	    <file>${LOG_FILE:-heatledger.log}</file>
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>	
+    
+    <!-- 
+    <appender name="TRACE-FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${TRACE_FILE:-trace.log}</file>
+       <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>TRACE</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>        
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+    -->     
+
+	<logger name="org.eclipse.jetty" level="ERROR"/>
+	<logger name="javax.servlet" level="ERROR"/>
+	<logger name="org.glassfish.jersey" level="ERROR"/>
+	<logger name="sun.net.www" level="ERROR"/>
+    <logger name="io.swagger" level="INFO"/>
+    	
+	<!-- 
+	<logger name="com.heatledger" level="TRACE">
+	   <appender-ref ref="TRACE-FILE" />
+	</logger>
+	 -->
+
+    <root level="debug">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root>
+    	
+</configuration>
