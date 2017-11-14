@@ -1,0 +1,68 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+ 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+version = '0.0.1'
+mainClassName = "com.heatledger.embed.sample.SampleMain"
+
+dependencies {
+  compile project(':heatledger')
+  compile()
+}
+
+repositories {
+  mavenCentral()
+}
+
+jar {
+  manifest {
+    attributes 'Implementation-Title': 'SampleApp',
+               'Implementation-Version': version
+  }
+}
+
+distributions {
+  main {
+    contents {
+      from('conf/genesis.json') { into 'conf' }
+      from('conf/genesis-test.json') { into 'conf' }  
+      from('conf/heat-default.properties') { into 'conf' }
+      from('conf/logback.xml') { into 'conf' }
+      from('conf/source-map.js') { into 'conf' }      
+      from('scripts') { into 'scripts' }
+    }
+  }
+}
+
+startScripts {
+  def configureClasspathVarUnix = { findClasspath, pathSeparator, line ->
+    line = line.replaceAll(~/^${findClasspath}=.*$/) { original ->
+      original += "${pathSeparator}\$APP_HOME/conf${pathSeparator}\$APP_HOME/scripts"
+    }
+  }
+  def configureUnixClasspath = configureClasspathVarUnix.curry('CLASSPATH', ':')
+  
+  def configureClasspathVarWindows = { findClasspath, pathSeparator, line ->
+    line = line.replaceAll(~/^${findClasspath}=.*$/) { original ->
+      original += "${pathSeparator}%APP_HOME%\\conf${pathSeparator}%APP_HOME%\\scripts"
+    }
+  }
+  def configureWindowsClasspath = configureClasspathVarWindows.curry('set CLASSPATH', ';')
+ 
+  doLast {
+    unixScript.text =
+            unixScript
+                .readLines()
+                .collect(configureUnixClasspath)
+                .join('\n')
+    // Remove too-long-classpath and use wildcard ( works for java 6 and above only - so is fine for us ) 
+    windowsScript.text = windowsScript.text.replaceAll('set CLASSPATH=.*', 'set CLASSPATH=.;%APP_HOME%/lib/*')                
+    windowsScript.text =
+            windowsScript
+                .readLines()
+                .collect(configureWindowsClasspath)
+                .join('\r\n')
+  } 
+}

@@ -1,0 +1,2 @@
+include ':heatledger'
+project(':heatledger').projectDir = new File(settingsDir, '../heatledger')
